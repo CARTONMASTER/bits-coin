@@ -1,9 +1,14 @@
+love = love
+
+-- settings
+local resolution = 15
+local linethickness = 3
+
+-- constants
 local w, h = love.graphics.getDimensions()
+local dimensionsByResolution = w / resolution
 
-local RESOLUTION = 15
-
-local dimensionsByResolution = w / RESOLUTION
-
+-- stock table
 local stockTable = {
     {
         price = 1
@@ -21,7 +26,7 @@ local stockTable = {
         price = 16
     },
     {
-        price = 14
+        price = 50
     }
 }
 
@@ -32,7 +37,6 @@ function love.load()
 end
 
 function love.draw()
-    local i2 = 2
     for i = 1, #stockTable do
         local v = stockTable[i]
         local nextv = stockTable[math.min(i + 1, #stockTable)]
@@ -42,15 +46,18 @@ function love.draw()
         else
             love.graphics.setColor(0,1,0)
         end
-
         local nextx = i * dimensionsByResolution
         local currentx = (i - 1) * dimensionsByResolution
         local currentprice = v.price
         local nextprice = nextv.price
 
+        if i == #stockTable then
+            nextx = currentx
+        end
+
         local x = (currentx + nextx) / 2
         local y = ((h - currentprice) + (h - nextprice)) / 2
-        local sx = 5
+        local sx = linethickness
         local sy = math.sqrt((nextx - currentx)^ 2 + (nextprice - currentprice)^ 2)
 
         local angle = math.atan2(
