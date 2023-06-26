@@ -1,4 +1,5 @@
 love = love
+camera = require("camera")
 
 -- settings
 local resolution = 15
@@ -12,27 +13,34 @@ local dimensionsByResolution = w / resolution
 local stockTable = {
     {
         price = 1
-    },
-    { 
-        price = 3
-    },
-    {
-        price = 1.5
-    },
-    {
-        price = 5
-    },
-    { 
-        price = 16
-    },
-    {
-        price = 50
     }
 }
+
+-- region
 
 function love.load()
     for i, v in pairs(stockTable) do
         stockTable[i].price = v.price * 10
+    end
+end
+
+function love.update()
+    camera.update()
+end
+
+function love.mousepressed(a, b, c)
+    camera.mousepressed(a, b, c)
+end
+
+function love.mousereleased(a, b, c)
+    camera.mousereleased(a, b, c)
+end
+
+function love.keypressed(key)
+    if key == "r" then
+        table.insert(stockTable, {
+            price = stockTable[#stockTable].price + love.math.random(-20, 50)
+        })
     end
 end
 
@@ -46,6 +54,7 @@ function love.draw()
         else
             love.graphics.setColor(0,1,0)
         end
+
         local nextx = i * dimensionsByResolution
         local currentx = (i - 1) * dimensionsByResolution
         local currentprice = v.price
@@ -66,7 +75,7 @@ function love.draw()
         )
 
         love.graphics.push()
-        love.graphics.translate(x, y)
+        love.graphics.translate(x - camera.offset.x - camera.pre_offset.x, y - camera.offset.y - camera.pre_offset.y)
         love.graphics.rotate(angle)
         love.graphics.rectangle("fill", -sx / 2, -sy / 2, sx, sy)
         love.graphics.pop()
