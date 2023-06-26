@@ -28,6 +28,10 @@ function love.update()
     camera.update()
 end
 
+function love.wheelmoved(a, b)
+    camera.wheelmoved(a, b)
+end
+
 function love.mousepressed(a, b, c)
     camera.mousepressed(a, b, c)
 end
@@ -37,6 +41,8 @@ function love.mousereleased(a, b, c)
 end
 
 function love.keypressed(key)
+    camera.keypressed(key)
+
     if key == "r" then
         table.insert(stockTable, {
             price = stockTable[#stockTable].price + love.math.random(-20, 50)
@@ -55,10 +61,12 @@ function love.draw()
             love.graphics.setColor(0,1,0)
         end
 
-        local nextx = i * dimensionsByResolution
-        local currentx = (i - 1) * dimensionsByResolution
-        local currentprice = v.price
-        local nextprice = nextv.price
+        local editedDimensions = dimensionsByResolution * camera.scroll.y
+
+        local nextx = i * editedDimensions
+        local currentx = (i - 1) * editedDimensions
+        local currentprice = v.price * camera.scroll.y
+        local nextprice = nextv.price * camera.scroll.y
 
         if i == #stockTable then
             nextx = currentx
@@ -66,12 +74,12 @@ function love.draw()
 
         local x = (currentx + nextx) / 2
         local y = ((h - currentprice) + (h - nextprice)) / 2
-        local sx = linethickness
+        local sx = linethickness * camera.scroll.y
         local sy = math.sqrt((nextx - currentx)^ 2 + (nextprice - currentprice)^ 2)
 
         local angle = math.atan2(
-            ((i * dimensionsByResolution) - (i - 1) * dimensionsByResolution),
-            (nextv.price - v.price)
+            ((i * editedDimensions) - (i - 1) * editedDimensions),
+            (nextprice - currentprice)
         )
 
         love.graphics.push()

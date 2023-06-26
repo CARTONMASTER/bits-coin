@@ -8,8 +8,13 @@ local camera = {
     start_pre_offset = {
         x = 0, y = 0
     },
-    hold = false
+    hold = false,
+    scroll = {
+        x = 1, y = 1
+    }
 }
+
+local w, h = love.graphics.getDimensions()
 
 function camera.mousereleased(x, y, button)
     if button == 2 then
@@ -32,6 +37,26 @@ function camera.mousepressed(x, y, button)
         camera.hold = true
         camera.start_pre_offset = {
             x = x, y = y
+        }
+    end
+end
+
+function camera.wheelmoved(x, y)
+    print(y)
+
+    --[[camera.offset = {
+        x = camera.offset.x + w / 2, y = camera.offset.y * h / 2
+    }]]
+
+    camera.scroll = {
+        x = math.min(math.max(camera.scroll.x + x, 1), 15), y = math.min(math.max(camera.scroll.y + y, 1), 15)
+    }
+end
+
+function camera.keypressed(key)
+    if key == "c" then
+        camera.offset = {
+            x = 0, y = 0
         }
     end
 end
